@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Guitar Thing</title>
+</head>
+
+<body>
+    <canvas id="canvas"> </canvas>
+</body>
+
+<script>
+    // 480,70  480 800
+    var mouseX, mouseY = 0;
+    var audio = new Audio('sounds/G.mp3');
+
+    var canvas = document.getElementById("canvas");
+    canvas.width = "1000";
+    canvas.height = "1000";
+    var ctx = canvas.getContext("2d");
+
+    var imgs = [];
+    imgs[0] = document.createElement("img");
+    imgs[0].src = "img/guitar.png";
+    imgs[1] = document.createElement("img");
+    imgs[1].src = "img/guitar2.png";
+
+    var image = imgs[0];
+
+    /*image.onload = () => {
+        ctx.drawImage(image,0,0);
+    };*/
+
+    var didPlay = false;
+
+    document.onmousemove = (e) => {
+        var rect = canvas.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+
+        if (strum && (mouseX <= 480 && mouseX >= 470) && (mouseY < 800 && mouseY > 70)) {
+            if (!didPlay) {
+                if (!audio.ended) {
+                    audio.pause();
+                    audio = new Audio('sounds/G.mp3');
+                }
+                audio.play();
+                didPlay = true;
+            }
+        } else {
+            didPlay = false;
+        }
+    }
+
+    var strum = false;
+    document.onmousedown = (e) => {
+        strum = true;
+    }
+    document.onmouseup = (e) => {
+        strum = false;
+    }
+
+
+    setInterval(function () {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(image, 0, 0, 1000, 1000);
+        ctx.font = '48px arial';
+        ctx.fillStyle = 'black';
+        ctx.fillText(mouseX + " " + mouseY, 10, 50);
+        //console.log(mouseX)
+    }, 100)
+
+    var frame = 0;
+    setInterval(function() {
+        frame++;
+        image = imgs[frame%2];
+    },500);
+</script>
+
+<style>
+    body {
+        display: inline-flex;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    #canvas {
+        margin: auto;
+    }
+</style>
+
+</html>
