@@ -12,14 +12,25 @@
 <script>
     // 480,70  480 800
     var mouseX, mouseY = 0;
+    var init = 0;
+    var dev = false;
     var audio = new Audio('sounds/G.mp3');
 
     var canvas = document.getElementById("canvas");
-    canvas.width = "1000";
-    canvas.height = "1000";
+    canvas.width = "800";
+    canvas.height = "800";
     var ctx = canvas.getContext("2d");
 
     var imgs = [];
+    var initimg = [];
+    initimg[0] = document.createElement("img");
+    initimg[0].src = "img/click.png";
+    initimg[1] = document.createElement("img");
+    initimg[1].src = "img/swipe.png";
+    initimg[2] = document.createElement("img");
+    initimg[2].src = "img/play.png";
+    initimg[3] = document.createElement("img");
+    initimg[3].src = "img/transparent.png";
     imgs[0] = document.createElement("img");
     imgs[0].src = "img/guitar.png";
     imgs[1] = document.createElement("img");
@@ -32,14 +43,20 @@
     };*/
 
     var didPlay = false;
+    var timeout = '';
 
     document.onmousemove = (e) => {
         var rect = canvas.getBoundingClientRect();
         mouseX = e.clientX - rect.left;
         mouseY = e.clientY - rect.top;
 
-        if (strum && (mouseX <= 480 && mouseX >= 470) && (mouseY < 800 && mouseY > 70)) {
+        if (strum && (mouseX <= 380 && mouseX >= 370) && (mouseY < 800 && mouseY > 70)) {
             if (!didPlay) {
+                init = 2;
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    init = 3;
+                }, 1000);
                 if (!audio.ended) {
                     audio.pause();
                     audio = new Audio('sounds/G.mp3');
@@ -54,28 +71,43 @@
 
     var strum = false;
     document.onmousedown = (e) => {
+        if (init == 0) {
+            init = 1;
+        }
         strum = true;
     }
     document.onmouseup = (e) => {
+        if (init == 1) {
+            init = 0;
+        }
         strum = false;
+    }
+
+    document.onkeydown = (e) => {
+        if (e.key == "Escape") {
+            dev = !dev;
+        }
     }
 
 
     setInterval(function () {
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(image, 0, 0, 1000, 1000);
+        ctx.drawImage(image, 0, 0, 800, 800);
+        ctx.drawImage(initimg[init], 0, 0, 800, 800);
         ctx.font = '48px arial';
-        ctx.fillStyle = 'black';
-        ctx.fillText(mouseX + " " + mouseY, 10, 50);
+        if (dev) {
+            ctx.fillStyle = 'black';
+            ctx.fillText("X:" + mouseX + " Y:" + mouseY, 10, 50);
+        }
         //console.log(mouseX)
     }, 100)
 
     var frame = 0;
-    setInterval(function() {
+    setInterval(function () {
         frame++;
-        image = imgs[frame%2];
-    },500);
+        image = imgs[frame % 2];
+    }, 500);
 </script>
 
 <style>
